@@ -13,13 +13,11 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-//логические ядра
 int GetLogicalCoreCount() {
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
     return sysInfo.dwNumberOfProcessors;
 }
-//мониторы
 BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
     std::wstringstream* ss = reinterpret_cast<std::wstringstream*>(dwData);
 
@@ -41,7 +39,7 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMoni
         *ss << L"\r\n";
     }
 
-    return TRUE; // Продолжаем перечислять мониторы
+    return TRUE; 
 }
 //вивід інформації про ос
 std::wstring GetOSInfo() {
