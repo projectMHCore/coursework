@@ -17,7 +17,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 int GetLogicalCoreCount() {
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
-    return sysInfo.dwNumberOfProcessors; // Количество логических процессоров
+    return sysInfo.dwNumberOfProcessors;
 }
 //мониторы
 BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
@@ -43,7 +43,7 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMoni
 
     return TRUE; // Продолжаем перечислять мониторы
 }
-//вывод информации об осс
+//вивід інформації про ос
 std::wstring GetOSInfo() {
     std::wstringstream ss;
     ss << L"=== Operating System Information ===\r\n";
@@ -52,14 +52,14 @@ std::wstring GetOSInfo() {
     IWbemLocator* pLoc = NULL;
     IWbemServices* pSvc = NULL;
 
-    // Инициализация COM
+    
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres)) {
         ss << L"COM initialization failed.\r\n";
         return ss.str();
     }
 
-    // Инициализация безопасности
+    
     hres = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
         RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
     if (FAILED(hres)) {
@@ -68,7 +68,6 @@ std::wstring GetOSInfo() {
         return ss.str();
     }
 
-    // Создание экземпляра IWbemLocator
     hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER,
         IID_IWbemLocator, (LPVOID*)&pLoc);
     if (FAILED(hres)) {
@@ -77,7 +76,6 @@ std::wstring GetOSInfo() {
         return ss.str();
     }
 
-    // Подключение к WMI
     hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc);
     if (FAILED(hres)) {
         ss << L"Could not connect to WMI namespace.\r\n";
@@ -86,7 +84,6 @@ std::wstring GetOSInfo() {
         return ss.str();
     }
 
-    // Выполнение запроса WMI
     IEnumWbemClassObject* pEnumerator = NULL;
     hres = pSvc->ExecQuery(bstr_t("WQL"),
         bstr_t("SELECT Caption, Version, OSArchitecture, BuildNumber, InstallDate, CSName, RegisteredUser FROM Win32_OperatingSystem"),
@@ -100,7 +97,6 @@ std::wstring GetOSInfo() {
         return ss.str();
     }
 
-    // Обработка результатов
     IWbemClassObject* pclsObj = NULL;
     ULONG uReturn = 0;
 
@@ -110,35 +106,30 @@ std::wstring GetOSInfo() {
 
         VARIANT vtProp;
 
-        // Название ОС
         hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"OS Name: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // Версия
         hr = pclsObj->Get(L"Version", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Version: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // Архитектура ОС
         hr = pclsObj->Get(L"OSArchitecture", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Architecture: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // Номер сборки
         hr = pclsObj->Get(L"BuildNumber", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Build Number: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // Дата установки
         hr = pclsObj->Get(L"InstallDate", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             std::wstring dateStr = vtProp.bstrVal;
@@ -151,14 +142,12 @@ std::wstring GetOSInfo() {
         }
         VariantClear(&vtProp);
 
-        // Имя компьютера
         hr = pclsObj->Get(L"CSName", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Computer Name: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // Имя пользователя
         hr = pclsObj->Get(L"RegisteredUser", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Register user: " << vtProp.bstrVal << L"\r\n";
@@ -168,7 +157,6 @@ std::wstring GetOSInfo() {
         pclsObj->Release();
     }
 
-    // Очистка ресурсов
     pEnumerator->Release();
     pSvc->Release();
     pLoc->Release();
@@ -176,7 +164,7 @@ std::wstring GetOSInfo() {
 
     return ss.str();
 }
-// Функция для получения информации о процессоре
+//вивід інформації про процесор
 std::wstring GetCPUInfo() {
     std::wstringstream ss;
     ss << L"=== Processor Information ===\r\n";
@@ -185,14 +173,14 @@ std::wstring GetCPUInfo() {
     IWbemLocator* pLoc = NULL;
     IWbemServices* pSvc = NULL;
 
-    // Инициализация COM
+    
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres)) {
         ss << L"COM initialization failed.\r\n";
         return ss.str();
     }
 
-    // Инициализация безопасности
+    
     hres = CoInitializeSecurity(
         NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
         RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL
@@ -203,7 +191,6 @@ std::wstring GetCPUInfo() {
         return ss.str();
     }
 
-    // Создание экземпляра IWbemLocator
     hres = CoCreateInstance(
         CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER,
         IID_IWbemLocator, (LPVOID*)&pLoc
@@ -214,7 +201,6 @@ std::wstring GetCPUInfo() {
         return ss.str();
     }
 
-    // Подключение к WMI
     hres = pLoc->ConnectServer(
         _bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc
     );
@@ -225,7 +211,6 @@ std::wstring GetCPUInfo() {
         return ss.str();
     }
 
-    // Выполнение запроса WMI
     IEnumWbemClassObject* pEnumerator = NULL;
     hres = pSvc->ExecQuery(
         bstr_t("WQL"),
@@ -243,7 +228,6 @@ std::wstring GetCPUInfo() {
         return ss.str();
     }
 
-    // Обработка результатов
     IWbemClassObject* pclsObj = NULL;
     ULONG uReturn = 0;
 
@@ -256,7 +240,7 @@ std::wstring GetCPUInfo() {
         VARIANT vtProp;
 
         hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
-        if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {  // Проверка типа VT_BSTR
+        if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) { 
             ss << L"Processor Name: " << vtProp.bstrVal << L"\r\n";
         }
         else {
@@ -268,7 +252,7 @@ std::wstring GetCPUInfo() {
         ss << L"Logical Processors: " << logicalCores << L"\r\n";
 
         hr = pclsObj->Get(L"NumberOfCores", 0, &vtProp, 0, 0);
-        if (SUCCEEDED(hr) && vtProp.vt == VT_I4) {  // Проверка типа VT_I4
+        if (SUCCEEDED(hr) && vtProp.vt == VT_I4) {  
             ss << L"Number of Cores: " << vtProp.intVal << L"\r\n";
         }
         else {
@@ -277,18 +261,16 @@ std::wstring GetCPUInfo() {
         VariantClear(&vtProp);
 
         hr = pclsObj->Get(L"MaxClockSpeed", 0, &vtProp, 0, 0);
-        if (SUCCEEDED(hr) && vtProp.vt == VT_UI4) {  // Проверка типа VT_UI4
+        if (SUCCEEDED(hr) && vtProp.vt == VT_UI4) { 
             ss << L"Original Clock Speed (MHz): " << vtProp.uintVal << L"\r\n";
         }
         else {
-            ss << L"Original Clock Speed (MHz): 3500\r\n";
-            //Max Clock Speed: N/A
+            ss << L"Original Clock Speed (MHz): N/A\r\n";
         }
         VariantClear(&vtProp);
 
     }
 
-    // Очистка
     pEnumerator->Release();
     pSvc->Release();
     pLoc->Release();
@@ -296,7 +278,7 @@ std::wstring GetCPUInfo() {
 
     return ss.str();
 }
-//Вывод информации об озу
+//вивід інформації про озу
 std::wstring GetMemoryInfo() {
     std::wstringstream ss;
     ss << L"=== Memory Information ===\r\n";
@@ -305,14 +287,14 @@ std::wstring GetMemoryInfo() {
     IWbemLocator* pLoc = NULL;
     IWbemServices* pSvc = NULL;
 
-    // Инициализация COM
+    
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres)) {
         ss << L"COM initialization failed.\r\n";
         return ss.str();
     }
 
-    // Инициализация безопасности
+    
     hres = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
         RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
 
@@ -322,7 +304,6 @@ std::wstring GetMemoryInfo() {
         return ss.str();
     }
 
-    // Создание экземпляра IWbemLocator
     hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID*)&pLoc);
 
     if (FAILED(hres)) {
@@ -331,7 +312,6 @@ std::wstring GetMemoryInfo() {
         return ss.str();
     }
 
-    // Подключение к WMI
     hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc);
 
     if (FAILED(hres)) {
@@ -354,7 +334,6 @@ std::wstring GetMemoryInfo() {
         return ss.str();
     }
 
-    // Обработка результатов
     IWbemClassObject* pclsObj = NULL;
     ULONG uReturn = 0;
 
@@ -391,7 +370,7 @@ std::wstring GetMemoryInfo() {
 
     return ss.str();
 }
-// Функция для получения информации о BIOS
+//вивід інформації про BIOS
 std::wstring GetBIOSInfo() {
     std::wstringstream ss;
     ss << L"=== BIOS Information ===\r\n";
@@ -400,14 +379,12 @@ std::wstring GetBIOSInfo() {
     IWbemLocator* pLoc = NULL;
     IWbemServices* pSvc = NULL;
 
-    // Инициализация COM
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres)) {
         ss << L"COM initialization failed.\r\n";
         return ss.str();
     }
 
-    // Инициализация безопасности
     hres = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
         RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
     if (FAILED(hres)) {
@@ -416,7 +393,6 @@ std::wstring GetBIOSInfo() {
         return ss.str();
     }
 
-    // Создание экземпляра IWbemLocator
     hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID*)&pLoc);
     if (FAILED(hres)) {
         ss << L"Failed to create IWbemLocator.\r\n";
@@ -424,7 +400,6 @@ std::wstring GetBIOSInfo() {
         return ss.str();
     }
 
-    // Подключение к WMI
     hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc);
     if (FAILED(hres)) {
         ss << L"Could not connect to WMI namespace.\r\n";
@@ -433,7 +408,6 @@ std::wstring GetBIOSInfo() {
         return ss.str();
     }
 
-    // Выполнение запроса WMI
     IEnumWbemClassObject* pEnumerator = NULL;
     hres = pSvc->ExecQuery(bstr_t("WQL"), bstr_t("SELECT * FROM Win32_BIOS"), WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
     if (FAILED(hres)) {
@@ -444,7 +418,6 @@ std::wstring GetBIOSInfo() {
         return ss.str();
     }
 
-    // Обработка результатов
     IWbemClassObject* pclsObj = NULL;
     ULONG uReturn = 0;
 
@@ -454,21 +427,18 @@ std::wstring GetBIOSInfo() {
 
         VARIANT vtProp;
 
-        // Тип BIOS
         hr = pclsObj->Get(L"Manufacturer", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Type BIOS: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // Версия BIOS
         hr = pclsObj->Get(L"SMBIOSBIOSVersion", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"BIOS Version: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // Дата BIOS системы
         hr = pclsObj->Get(L"ReleaseDate", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             std::wstring dateStr = vtProp.bstrVal;
@@ -481,7 +451,6 @@ std::wstring GetBIOSInfo() {
         VariantClear(&vtProp);
     }
 
-    // Очистка ресурсов
     pEnumerator->Release();
     pSvc->Release();
     pLoc->Release();
@@ -489,7 +458,7 @@ std::wstring GetBIOSInfo() {
 
     return ss.str();
 }
-// Функция для получения информации о системной плате
+//вивід інформації про системну плату
 std::wstring GetMotherboardInfo() {
     std::wstringstream ss;
     ss << L"=== Motherboard Information ===\r\n";
@@ -498,14 +467,14 @@ std::wstring GetMotherboardInfo() {
     IWbemLocator* pLoc = NULL;
     IWbemServices* pSvc = NULL;
 
-    // Инициализация COM
+    
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres)) {
         ss << L"COM initialization failed.\r\n";
         return ss.str();
     }
 
-    // Инициализация безопасности
+    
     hres = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
         RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
     if (FAILED(hres)) {
@@ -514,7 +483,6 @@ std::wstring GetMotherboardInfo() {
         return ss.str();
     }
 
-    // Создание экземпляра IWbemLocator
     hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID*)&pLoc);
     if (FAILED(hres)) {
         ss << L"Failed to create IWbemLocator.\r\n";
@@ -522,7 +490,6 @@ std::wstring GetMotherboardInfo() {
         return ss.str();
     }
 
-    // Подключение к WMI
     hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc);
     if (FAILED(hres)) {
         ss << L"Could not connect to WMI namespace.\r\n";
@@ -531,7 +498,6 @@ std::wstring GetMotherboardInfo() {
         return ss.str();
     }
 
-    // Выполнение запроса WMI для системной платы
     IEnumWbemClassObject* pEnumerator = NULL;
     hres = pSvc->ExecQuery(bstr_t("WQL"), bstr_t("SELECT Product, Manufacturer, SerialNumber, Version FROM Win32_BaseBoard"), WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
     if (FAILED(hres)) {
@@ -542,7 +508,6 @@ std::wstring GetMotherboardInfo() {
         return ss.str();
     }
 
-    // Обработка результатов
     IWbemClassObject* pclsObj = NULL;
     ULONG uReturn = 0;
 
@@ -552,14 +517,12 @@ std::wstring GetMotherboardInfo() {
 
         VARIANT vtProp;
 
-        // Название платы
         hr = pclsObj->Get(L"Product", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Motherboard Name: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // Производитель
         hr = pclsObj->Get(L"Manufacturer", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Manufacturer: " << vtProp.bstrVal << L"\r\n";
@@ -569,7 +532,6 @@ std::wstring GetMotherboardInfo() {
         pclsObj->Release();
     }
 
-    // Выполнение запроса WMI для процессора (для получения частоты шины и типа шины)
     hres = pSvc->ExecQuery(bstr_t("WQL"), bstr_t("SELECT MaxClockSpeed, ExtClock FROM Win32_Processor"), WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
     if (FAILED(hres)) {
         ss << L"WMI query for processor failed.\r\n";
@@ -596,7 +558,6 @@ std::wstring GetMotherboardInfo() {
         pclsObj->Release();
     }
 
-    // Очистка ресурсов
     pEnumerator->Release();
     pSvc->Release();
     pLoc->Release();
@@ -604,7 +565,7 @@ std::wstring GetMotherboardInfo() {
 
     return ss.str();
 }
-// Функция для получения информации о дисках
+//вивід інформації про дисках
 std::wstring GetDiskInfo() {
     std::wstringstream ss;
     ss << L"=== Disk Information ===\r\n";
@@ -666,9 +627,8 @@ std::wstring GetDiskInfo() {
 
         VARIANT vtProp;
 
-        // ID устройства
         hr = pclsObj->Get(L"DeviceID", 0, &vtProp, 0, 0);
-        if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {  // Проверка типа VT_BSTR
+        if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) { 
             ss << L"Drive: " << vtProp.bstrVal << L"\r\n";
         }
         else {
@@ -676,7 +636,6 @@ std::wstring GetDiskInfo() {
         }
         VariantClear(&vtProp);
 
-        // Свободное пространство
         hr = pclsObj->Get(L"FreeSpace", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && (vtProp.vt == VT_UI8 || SUCCEEDED(VariantChangeType(&vtProp, &vtProp, 0, VT_UI8)))) {
             ss << L"Free Space: " << (vtProp.ullVal / (1024 * 1024 * 1024)) << L" GB\r\n";
@@ -686,7 +645,6 @@ std::wstring GetDiskInfo() {
         }
         VariantClear(&vtProp);
 
-        // Общий размер
         hr = pclsObj->Get(L"Size", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && (vtProp.vt == VT_UI8 || SUCCEEDED(VariantChangeType(&vtProp, &vtProp, 0, VT_UI8)))) {
             ss << L"Total Size: " << (vtProp.ullVal / (1024 * 1024 * 1024)) << L" GB\r\n";
@@ -696,10 +654,8 @@ std::wstring GetDiskInfo() {
         }
         VariantClear(&vtProp);
 
-
-        // Файловая система
         hr = pclsObj->Get(L"FileSystem", 0, &vtProp, 0, 0);
-        if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {  // Проверка типа VT_BSTR
+        if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) { 
             ss << L"File System: " << vtProp.bstrVal << L"\r\n";
         }
         else {
@@ -718,7 +674,7 @@ std::wstring GetDiskInfo() {
 
     return ss.str();
 }
-//Вывод монитора
+//вивід інформації про монитори
 std::wstring GetMonitorInfo() {
     std::wstringstream ss;
     ss << L"=== Monitor Information ===\r\n";
@@ -727,7 +683,7 @@ std::wstring GetMonitorInfo() {
 
     return ss.str();
 }
-// информация о видеоадаптере
+//вивід інформації про видеоадаптер
 std::wstring GetVideoAdapterInfo() {
     std::wstringstream ss;
     ss << L"=== Video Adapter Information ===\r\n";
@@ -756,7 +712,7 @@ std::wstring GetVideoAdapterInfo() {
 
     return ss.str();
 }
-//вывод об сети
+//вивід інформації про мережу
 std::wstring GetNetworkInfo() {
     std::wstringstream ss;
     ss << L"=== Network Information ===\r\n";
@@ -765,14 +721,12 @@ std::wstring GetNetworkInfo() {
     IWbemLocator* pLoc = NULL;
     IWbemServices* pSvc = NULL;
 
-    // Инициализация COM
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres)) {
         ss << L"COM initialization failed.\r\n";
         return ss.str();
     }
 
-    // Инициализация безопасности
     hres = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
         RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
     if (FAILED(hres)) {
@@ -781,7 +735,6 @@ std::wstring GetNetworkInfo() {
         return ss.str();
     }
 
-    // Создание экземпляра IWbemLocator
     hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER,
         IID_IWbemLocator, (LPVOID*)&pLoc);
     if (FAILED(hres)) {
@@ -790,7 +743,6 @@ std::wstring GetNetworkInfo() {
         return ss.str();
     }
 
-    // Подключение к WMI
     hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc);
     if (FAILED(hres)) {
         ss << L"Could not connect to WMI namespace.\r\n";
@@ -799,7 +751,6 @@ std::wstring GetNetworkInfo() {
         return ss.str();
     }
 
-    // Запрос к WMI для получения информации о сетевых адаптерах
     IEnumWbemClassObject* pEnumerator = NULL;
     hres = pSvc->ExecQuery(bstr_t("WQL"),
         bstr_t("SELECT Description, IPAddress, MACAddress FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = TRUE"),
@@ -813,7 +764,6 @@ std::wstring GetNetworkInfo() {
         return ss.str();
     }
 
-    // Обработка результатов
     IWbemClassObject* pclsObj = NULL;
     ULONG uReturn = 0;
 
@@ -823,28 +773,25 @@ std::wstring GetNetworkInfo() {
 
         VARIANT vtProp;
 
-        // Описание адаптера
         hr = pclsObj->Get(L"Description", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Adapter: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // MAC-адрес
         hr = pclsObj->Get(L"MACAddress", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"MAC Address: " << vtProp.bstrVal << L"\r\n";
         }
         VariantClear(&vtProp);
 
-        // IP-адрес
         hr = pclsObj->Get(L"IPAddress", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == (VT_ARRAY | VT_BSTR)) {
             SAFEARRAY* psa = vtProp.parray;
             BSTR* pbstr;
             SafeArrayAccessData(psa, (void**)&pbstr);
 
-            ss << L"IP Address: " << pbstr[0] << L"\r\n"; // Первый IP-адрес
+            ss << L"IP Address: " << pbstr[0] << L"\r\n";
             SafeArrayUnaccessData(psa);
             
         }
@@ -854,7 +801,6 @@ std::wstring GetNetworkInfo() {
         pclsObj->Release();
     }
 
-    // Очистка ресурсов
     pEnumerator->Release();
     pSvc->Release();
     pLoc->Release();
@@ -862,7 +808,7 @@ std::wstring GetNetworkInfo() {
 
     return ss.str();
 }
-// вывод об переферии
+//вивід інформації про переферію
 std::wstring GetPeripheralInfo() {
     std::wstringstream ss;
     ss << L"=== Peripheral Devices Information ===\r\n";
@@ -871,14 +817,12 @@ std::wstring GetPeripheralInfo() {
     IWbemLocator* pLoc = NULL;
     IWbemServices* pSvc = NULL;
 
-    // Инициализация COM
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres)) {
         ss << L"COM initialization failed.\r\n";
         return ss.str();
     }
 
-    // Инициализация безопасности
     hres = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
         RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
     if (FAILED(hres)) {
@@ -887,7 +831,6 @@ std::wstring GetPeripheralInfo() {
         return ss.str();
     }
 
-    // Создание экземпляра IWbemLocator
     hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER,
         IID_IWbemLocator, (LPVOID*)&pLoc);
     if (FAILED(hres)) {
@@ -896,7 +839,6 @@ std::wstring GetPeripheralInfo() {
         return ss.str();
     }
 
-    // Подключение к WMI
     hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc);
     if (FAILED(hres)) {
         ss << L"Could not connect to WMI namespace.\r\n";
@@ -905,7 +847,6 @@ std::wstring GetPeripheralInfo() {
         return ss.str();
     }
 
-    // Запрос к WMI для получения периферийных устройств
     IEnumWbemClassObject* pEnumerator = NULL;
     hres = pSvc->ExecQuery(bstr_t("WQL"),
         bstr_t("SELECT Name, Description FROM Win32_PnPEntity"),
@@ -919,7 +860,6 @@ std::wstring GetPeripheralInfo() {
         return ss.str();
     }
 
-    // Обработка результатов
     IWbemClassObject* pclsObj = NULL;
     ULONG uReturn = 0;
 
@@ -929,7 +869,6 @@ std::wstring GetPeripheralInfo() {
 
         VARIANT vtProp;
 
-        // Имя устройства
         hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             ss << L"Device: " << vtProp.bstrVal << L"\r\n";
@@ -939,7 +878,6 @@ std::wstring GetPeripheralInfo() {
         pclsObj->Release();
     }
 
-    // Очистка ресурсов
     pEnumerator->Release();
     pSvc->Release();
     pLoc->Release();
@@ -947,7 +885,7 @@ std::wstring GetPeripheralInfo() {
 
     return ss.str();
 }
-//вывод usb устройств
+//вивід інформації про usb пристрої
 std::wstring GetUSBDevicesInfo() {
     std::wstringstream ss;
     ss << L"=== USB Devices Information ===\r\n";
@@ -956,14 +894,12 @@ std::wstring GetUSBDevicesInfo() {
     IWbemLocator* pLoc = NULL;
     IWbemServices* pSvc = NULL;
 
-    // Инициализация COM
     hres = CoInitializeEx(0, COINIT_MULTITHREADED);
     if (FAILED(hres)) {
         ss << L"COM initialization failed.\r\n";
         return ss.str();
     }
 
-    // Инициализация безопасности
     hres = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
         RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
     if (FAILED(hres)) {
@@ -972,7 +908,6 @@ std::wstring GetUSBDevicesInfo() {
         return ss.str();
     }
 
-    // Создание экземпляра IWbemLocator
     hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER,
         IID_IWbemLocator, (LPVOID*)&pLoc);
     if (FAILED(hres)) {
@@ -981,7 +916,6 @@ std::wstring GetUSBDevicesInfo() {
         return ss.str();
     }
 
-    // Подключение к WMI
     hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc);
     if (FAILED(hres)) {
         ss << L"Could not connect to WMI namespace.\r\n";
@@ -990,7 +924,6 @@ std::wstring GetUSBDevicesInfo() {
         return ss.str();
     }
 
-    // Запрос к WMI для получения подключённых USB-устройств
     IEnumWbemClassObject* pEnumerator = NULL;
     hres = pSvc->ExecQuery(bstr_t("WQL"),
         bstr_t("SELECT * FROM Win32_USBControllerDevice"),
@@ -1004,7 +937,6 @@ std::wstring GetUSBDevicesInfo() {
         return ss.str();
     }
 
-    // Обработка результатов
     IWbemClassObject* pclsObj = NULL;
     ULONG uReturn = 0;
 
@@ -1014,7 +946,6 @@ std::wstring GetUSBDevicesInfo() {
 
         VARIANT vtProp;
 
-        // Получаем путь к USB устройству
         hr = pclsObj->Get(L"Dependent", 0, &vtProp, 0, 0);
         if (SUCCEEDED(hr) && vtProp.vt == VT_BSTR) {
             std::wstring devicePath = vtProp.bstrVal;
@@ -1023,7 +954,6 @@ std::wstring GetUSBDevicesInfo() {
                 std::wstring deviceId = devicePath.substr(pos + 10);
                 deviceId = deviceId.substr(0, deviceId.length() - 1);
 
-                // Запрос для получения информации об устройстве
                 IEnumWbemClassObject* pDeviceEnumerator = NULL;
                 std::wstring query = L"SELECT Name, Description FROM Win32_PnPEntity WHERE DeviceID=\"" + deviceId + L"\"";
                 hres = pSvc->ExecQuery(bstr_t("WQL"), bstr_t(query.c_str()),
@@ -1038,14 +968,12 @@ std::wstring GetUSBDevicesInfo() {
 
                         VARIANT vtName, vtDescription;
 
-                        // Имя устройства
                         hrDevice = pDeviceObj->Get(L"Name", 0, &vtName, 0, 0);
                         if (SUCCEEDED(hrDevice) && vtName.vt == VT_BSTR) {
                             ss << L"Device Name: " << vtName.bstrVal << L"\r\n";
                         }
                         VariantClear(&vtName);
 
-                        // Описание устройства
                         hrDevice = pDeviceObj->Get(L"Description", 0, &vtDescription, 0, 0);
                         if (SUCCEEDED(hrDevice) && vtDescription.vt == VT_BSTR) {
                             ss << L"Description: " << vtDescription.bstrVal << L"\r\n";
@@ -1063,7 +991,6 @@ std::wstring GetUSBDevicesInfo() {
         pclsObj->Release();
     }
 
-    // Очистка ресурсов
     pEnumerator->Release();
     pSvc->Release();
     pLoc->Release();
@@ -1158,7 +1085,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             int sel = SendMessage(hMenu, LB_GETCURSEL, 0, 0);
             std::wstring result;
 
-            // Отладочное сообщение
             wchar_t debugMessage[100];
             swprintf_s(debugMessage, L"Selected menu item: %d\n", sel);
             OutputDebugStringW(debugMessage);
@@ -1178,7 +1104,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             default: result = L"Unknown selection."; break;
             }
 
-            // Проверка результата
             OutputDebugStringW(result.c_str());
             UpdateOutput(result);
         }
